@@ -31,6 +31,7 @@ resource "azurerm_linux_web_app" "webapp" {
   }
 }
 
+	### Création account storage 
 resource "azurerm_storage_account" "storage" {
   name                     = replace("${var.project_name}${var.environment}", "-", "")
   resource_group_name      = azurerm_resource_group.rg.name
@@ -46,4 +47,9 @@ resource "azurerm_storage_table" "messages" {
   storage_account_name = azurerm_storage_account.storage.name
 }
 
-
+	### Accès RBAC
+resource "azurerm_role_assignment" "storage_access" {
+  scope                = azurerm_storage_account.storage.id
+  role_definition_name = "Storage Table Data Contributor"
+  principal_id         = azurerm_linux_web_app.webapp.identity[0].principal_id
+}
