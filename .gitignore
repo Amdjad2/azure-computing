@@ -1,0 +1,12 @@
+# Terraform
+.terraform/
+infra/.terraform/
+*.tfstate
+*.tfstate.backup
+.crash.log
+
+# Azure CLI
+.azure/
+
+# OS / editor
+.DS_Store
