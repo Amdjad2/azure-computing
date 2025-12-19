@@ -31,7 +31,7 @@ resource "azurerm_linux_web_app" "webapp" {
   }
 }
 
-### Création account storage 
+	### Création account storage 
 resource "azurerm_storage_account" "storage" {
   name                     = replace("${var.project_name}${var.environment}", "-", "")
   resource_group_name      = azurerm_resource_group.rg.name
@@ -43,35 +43,45 @@ resource "azurerm_storage_account" "storage" {
 }
 
 resource "azurerm_storage_table" "messages" {
-  name               = "messages"
-  storage_account_id = azurerm_storage_account.storage.id
+  name                  = "messages"
+  storage_account_name    = azurerm_storage_account.storage.name
 }
 
-### Accès RBAC
+  ### Accès RBAC
 resource "azurerm_role_assignment" "storage_access" {
   scope                = azurerm_storage_account.storage.id
   role_definition_name = "Storage Table Data Contributor"
   principal_id         = azurerm_linux_web_app.webapp.identity[0].principal_id
+
+  depends_on = [
+    azurerm_linux_web_app.webapp
+  ]
 }
 
-data "azurerm_client_config" "current" {}
-
-###Azure Key Vault
-resource "azurerm_key_vault" "kv" {
-  name                          = "${local.prefix}-kv"
-  location                      = azurerm_resource_group.rg.location
-  resource_group_name           = azurerm_resource_group.rg.name
-  tenant_id                     = data.azurerm_client_config.current.tenant_id
-  sku_name                      = "standard"
-  purge_protection_enabled      = true
-  soft_delete_retention_days    = 7
-  public_network_access_enabled = true
-}
-
-
- ### Acces RBAC Key Vault
+  ### Accès RBAC Key Vault
 resource "azurerm_role_assignment" "kv_access" {
   scope                = azurerm_key_vault.kv.id
   role_definition_name = "Key Vault Secrets User"
   principal_id         = azurerm_linux_web_app.webapp.identity[0].principal_id
+
+  depends_on = [
+    azurerm_linux_web_app.webapp
+  ]
 }
+
+	### Accès RBAC
+data "azurerm_client_config" "current" {}
+
+  ### Azure Key Vault
+resource "azurerm_key_vault" "kv" {
+  name                        = lower(replace(substr("${local.prefix}kv", 0, 24), "_", "-"))
+  location                    = azurerm_resource_group.rg.location
+  resource_group_name         = azurerm_resource_group.rg.name
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  sku_name                    = "standard"
+  purge_protection_enabled    = true
+  soft_delete_retention_days  = 7
+  public_network_access_enabled = true
+}
+
+
