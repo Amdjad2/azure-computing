@@ -1,35 +1,7 @@
-#from fastapi import FastAPI
-#from azure.data.tables import TableServiceClient
-#import os
-
-#app = FastAPI(title="Azure Secure Web API")
-
-## Azure settings
-#STORAGE_ACCOUNT_NAME = os.getenv("STORAGE_ACCOUNT_NAME")
-#TABLE_NAME = os.getenv("TABLE_NAME")
-
-#from azure.identity import AzureCliCredential
-#credential = AzureCliCredential()
-
-#table_service = TableServiceClient(
-#    endpoint=f"https://{STORAGE_ACCOUNT_NAME}.table.core.windows.net",
-#    credential=credential
-#)
-
-#table_client = table_service.get_table_client(TABLE_NAME)
-
-#@app.get("/health")
-#def health():
-#    return {"status": "ok"}
-
-#@app.get("/messages")
-#def get_messages():
-#    entities = table_client.list_entities()
-#    return list(entities)
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from azure.identity import AzureCliCredential  # pour test local
+# from azure.identity import AzureCliCredential
+from azure.identity import DefaultAzureCredential
 from azure.data.tables import TableServiceClient
 import os
 import uuid
@@ -42,7 +14,10 @@ STORAGE_ACCOUNT_NAME = os.environ.get("STORAGE_ACCOUNT_NAME", "azuresecurewebapp
 TABLE_NAME = os.environ.get("TABLE_NAME", "messages")
 
 # Credential pour local testing
-credential = AzureCliCredential()  # DefaultAzureCredential() en prod App Service
+# credential = AzureCliCredential()  
+
+# DefaultAzureCredential() en prod App Service
+credential = DefaultAzureCredential()
 
 # Connexion Storage
 table_service = TableServiceClient(
