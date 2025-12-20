@@ -10,3 +10,9 @@ infra/.terraform/
 
 # OS / editor
 .DS_Store
+
+# Secret d'environnement
+venv/
+__pycache__/
+.env
+*.pyc
