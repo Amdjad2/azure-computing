@@ -13,3 +13,8 @@ variable "location" {
   type        = string
   default     = "francecentral"
 }
+
+app_settings = {
+  STORAGE_ACCOUNT_NAME = azurerm_storage_account.storage.name
+  TABLE_NAME           = azurerm_storage_table.messages.name
+}
