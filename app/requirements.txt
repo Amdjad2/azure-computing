@@ -1,4 +1,0 @@
-fastapi
-uvicorn
-azure-identity
-azure-data-tables
